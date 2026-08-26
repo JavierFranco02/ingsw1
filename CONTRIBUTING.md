@@ -31,3 +31,28 @@ Este repositorio es de la cátedra: los grupos **no suben sus archivos acá**, s
 - 🔄 Si tu enlace cambia (por ejemplo, renombraron el repositorio), abrí un nuevo Pull Request actualizando tu fila.
 
 Un Pull Request que no siga estas reglas será rechazado o editado por la cátedra antes de aprobarse.
+
+---
+
+# Cómo entregar los ejercitarios
+
+Los ejercitarios **no se entregan en este repositorio** ni por Pull Request: se completan directamente en el repositorio propio de cada grupo (el mismo que usan para el Trabajo Práctico).
+
+## Pasos (una sola vez, al principio del cuatrimestre)
+
+1. Descarguen la carpeta de plantilla: [`ejercitarios-plantilla/ejercitarios_carpeta.zip`](ejercitarios-plantilla/ejercitarios_carpeta.zip).
+2. Descomprímanla y arrastren la carpeta `ejercitarios/` a la raíz de **su propio repositorio** (el del TP), usando "Add file → Upload files" como ya hicieron con el resto de su repo.
+3. Confirmen el commit.
+
+## Por cada unidad
+
+1. Entren a `ejercitarios/unidad-0X/respuestas.md` dentro de **su propio repositorio**.
+2. Edítenlo directo desde la web (ícono de lápiz) y completen las respuestas.
+3. Guarden el cambio. El commit con fecha anterior al cierre de esa unidad es la entrega válida — no hay ningún paso adicional.
+
+## Reglas
+
+- ✅ Las respuestas se editan y viven en el repositorio del grupo, no acá.
+- ❌ No hace falta (ni corresponde) abrir un Pull Request para esto — a diferencia del listado de grupos del TP, acá no hay una tabla central que actualizar.
+- 📬 La corrección la hace la cátedra entrando directamente al repositorio del grupo, usando el enlace ya publicado en la tabla de [Grupos y trabajos](README.md#-grupos-y-trabajos).
+
