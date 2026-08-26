@@ -9,11 +9,12 @@ Material de cátedra: presentaciones, ejercitarios y el Trabajo Práctico Integr
 ## 📂 Contenido del repositorio
 
 ```
-index.html             → portada del sitio (GitHub Pages)
-diagnostico/           → test diagnóstico de la materia
-presentaciones/        → diapositivas de cada unidad, en formato .pptx
-ejercitarios/          → guías de trabajo para completar después de cada clase
-trabajo-practico/      → consigna del TP Integrador y plantilla para los grupos
+index.html               → portada del sitio (GitHub Pages)
+diagnostico/             → test diagnóstico de la materia
+presentaciones/          → diapositivas de cada unidad, en formato .pptx
+ejercitarios/            → guías de trabajo (enunciados) para completar después de cada clase
+ejercitarios-plantilla/  → plantilla que cada grupo copia a su propio repo para entregar sus respuestas
+trabajo-practico/        → consigna del TP Integrador y plantilla para los grupos
 ```
 
 ## 🌐 Sitio publicado
@@ -31,7 +32,18 @@ Antes de arrancar la Unidad 1, completá el [test diagnóstico](https://fjlesme.
 | 1 | Ingeniería de software: una visión previa | [Ver .pptx](presentaciones/unidad-01-vision-previa.pptx) | [Ver .docx](ejercitarios/unidad-01-ejercitario.docx) |
 | 2 | Ingeniería de Sistemas | [Ver .pptx](presentaciones/unidad-02-ingenieria-de-sistemas.pptx) | [Ver .docx](ejercitarios/unidad-02-ejercitario.docx) |
 
-> Este repositorio se va actualizando a medida que avanza el semestre. Las unidades futuras se agregan a esta tabla en el mismo formato.
+> Este repositorio se va actualizando a medida que avanza el cuatrimestre. Las unidades futuras se agregan a esta tabla en el mismo formato.
+
+### 📝 Cómo se entregan los ejercitarios
+
+Los ejercitarios se completan **en grupo** (el mismo grupo de 3 del Trabajo Práctico) y se entregan dentro del **repositorio propio del grupo** — el mismo que usan para el TP —, no en este repositorio.
+
+1. Al principio del cuatrimestre, cada grupo agrega una sola vez la carpeta [`ejercitarios/`](ejercitarios-plantilla/ejercitarios) a la raíz de su propio repositorio (o descarga directo el [.zip listo para arrastrar](ejercitarios-plantilla/ejercitarios_carpeta.zip)).
+2. Por cada unidad, completan `ejercitarios/unidad-0X/respuestas.md` editándolo directo desde la web de GitHub.
+3. No hay un paso de "entrega final": el commit con fecha anterior al cierre de cada unidad es la entrega válida.
+4. La cátedra corrige entrando directamente al repositorio del grupo (enlace disponible en la tabla de [Grupos y trabajos](#-grupos-y-trabajos) de abajo).
+
+> ℹ️ Se descartó usar GitHub Classroom para este flujo: GitHub anunció su discontinuación total a partir del 28/08/2026. Por eso los ejercitarios viven en el mismo repositorio que ya usa cada grupo para el TP, sin depender de herramientas externas.
 
 ## 🛠️ Trabajo Práctico Integrador
 
