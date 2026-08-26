@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Diagnóstico – Ingeniería de Software I</title>
+<style>
+:root{
+  --bg:#15171a;
+  --panel:#1c1f23;
+  --ink:#e7e5df;
+  --line:#33373d;
+  --signal:#7a9b8e;
+  --signal-dim:#232b28;
+  --warn:#b5695a;
+  --warn-dim:#2b2220;
+  --muted:#8b8f96;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Georgia','Iowan Old Style',serif;
+  line-height:1.5;
+  padding:0 0 80px;
+}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px;}
+header{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:32px;}
+.eyebrow{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-size:12px;
+  color:var(--signal);
+  font-weight:700;
+  margin-bottom:8px;
+}
+h1{font-size:32px;margin:0 0 10px;letter-spacing:-0.01em;color:var(--ink);}
+.sub{color:var(--muted);font-size:15px;font-family:'Helvetica Neue',Arial,sans-serif;}
+#progress-bar{
+  position:sticky;top:0;background:var(--bg);padding:14px 0 10px;z-index:5;
+  border-bottom:1px solid var(--line);
+}
+.progress-track{height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--signal);width:0%;transition:width .3s ease;}
+.progress-label{
+  font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:var(--muted);
+  margin-top:6px;letter-spacing:.04em;
+}
+.q{
+  border-bottom:1px solid var(--line);
+  padding:28px 0;
+}
+.q:first-of-type{padding-top:32px;}
+.q-unit{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--signal);font-weight:700;margin-bottom:6px;
+}
+.q-title{font-size:19px;margin:0 0 16px;color:var(--ink);}
+.options{display:flex;flex-direction:column;gap:10px;}
+.opt{
+  display:flex;align-items:flex-start;gap:12px;
+  border:1.5px solid var(--line);
+  border-radius:8px;
+  padding:12px 14px;
+  cursor:pointer;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:15px;
+  background:var(--panel);
+  color:var(--ink);
+  transition:border-color .15s, background .15s;
+}
+.opt:hover{border-color:var(--signal);}
+.opt input{margin-top:3px;accent-color:var(--signal);flex-shrink:0;}
+.opt.selected{border-color:var(--signal);background:var(--signal-dim);}
+.opt.correct{border-color:var(--signal);background:var(--signal-dim);}
+.opt.incorrect{border-color:var(--warn);background:var(--warn-dim);}
+#submit-btn, #retry-btn{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-weight:700;
+  font-size:15px;
+  background:var(--signal);
+  color:var(--bg);
+  border:none;
+  border-radius:8px;
+  padding:16px 28px;
+  cursor:pointer;
+  width:100%;
+  margin-top:24px;
+  letter-spacing:.02em;
+}
+#submit-btn:hover, #retry-btn:hover{background:#8fae9f;}
+#submit-btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed;}
+#results{display:none;}
+.score-hero{
+  text-align:center;
+  padding:36px 20px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  margin-bottom:28px;
+  background:var(--panel);
+}
+.score-num{font-size:56px;font-weight:700;line-height:1;color:var(--ink);}
+.score-level{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  text-transform:uppercase;letter-spacing:.1em;font-size:13px;
+  color:var(--signal);font-weight:700;margin-top:10px;
+}
+.score-desc{font-family:'Helvetica Neue',Arial,sans-serif;color:var(--muted);font-size:14px;margin-top:8px;}
+.breakdown{font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;}
+.breakdown h3{font-family:Georgia,serif;font-size:17px;margin:0 0 14px;color:var(--ink);}
+.bd-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.bd-label{flex:0 0 150px;font-size:13px;color:var(--muted);}
+.bd-track{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden;}
+.bd-fill{height:100%;background:var(--signal);}
+.bd-score{flex:0 0 34px;text-align:right;font-size:13px;font-weight:700;color:var(--ink);}
+#quiz-form{display:block;}
+.send-status{
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  font-size:13px;
+  color:var(--muted);
+  text-align:center;
+  margin-top:14px;
+}
+.send-status.ok{color:var(--signal);}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="eyebrow">Ingeniería de Software I · UniNorte</div>
+<h1>Test Diagnóstico de Ingeniería de Software I</h1>
+<div class="sub">24 preguntas de opción múltiple. Elegí la respuesta que consideres correcta en cada una — no hay penalización por intentarlo, esto es solo para conocer tu punto de partida. Tu resultado es completamente anónimo.</div>
+</header>
+
+<div id="progress-bar">
+<div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+<div class="progress-label" id="progress-label">0 de 24 respondidas</div>
+</div>
+
+<form id="quiz-form"></form>
+<button id="submit-btn" disabled>Responder para continuar</button>
+
+<div id="results">
+<div class="score-hero">
+<div class="score-num" id="score-num">0/24</div>
+<div class="score-level" id="score-level"></div>
+<div class="score-desc" id="score-desc"></div>
+</div>
+<div class="breakdown">
+<h3>Resultado por unidad</h3>
+<div id="breakdown-rows"></div>
+</div>
+<div class="send-status" id="send-status"></div>
+<button id="retry-btn">Volver a intentar</button>
+</div>
+</div>
+
+<script>
+// Pegá acá la URL de tu Google Apps Script publicado (ver instrucciones del README).
+// Mientras diga "PEGAR_URL_AQUI", los resultados NO se envían a ningún lado, solo se muestran en pantalla.
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbw9Kyj0YWOGIxqvpZ3xkHGGVOGXpW1pUHHY6RacP5j2BJQIWFNAJhm_a_kIkfO7McNAiw/exec";
+
+const QUESTIONS = [
+// Unidad 01: Conceptos de Software e Ingeniería de Software
+{
+  unit: "Unidad 01 · Conceptos de Software",
+  q: "¿Qué es la Ingeniería de Software?",
+  options: [
+    "Un lenguaje de programación específico",
+    "Una disciplina que aplica principios de ingeniería al desarrollo, operación y mantenimiento del software",
+    "Un tipo de hardware especializado",
+    "Un sistema operativo para servidores"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 01 · Conceptos de Software",
+  q: "¿Cuál es una característica que distingue al software del hardware?",
+  options: [
+    "El software se desgasta físicamente con el uso, igual que el hardware",
+    "El software es intangible, no se desgasta físicamente, aunque puede deteriorarse por cambios y mantenimiento",
+    "El software no puede modificarse una vez creado",
+    "El software siempre ocupa menos espacio que el hardware"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 01 · Conceptos de Software",
+  q: "¿Qué se entiende por 'software de alta calidad'?",
+  options: [
+    "Software que cumple con los requerimientos, es confiable y fácil de mantener",
+    "Software que tiene la mayor cantidad de líneas de código",
+    "Software desarrollado en el menor tiempo posible sin pruebas",
+    "Software que no requiere documentación"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 01 · Conceptos de Software",
+  q: "¿Cuáles son componentes típicos del software, además del código ejecutable?",
+  options: [
+    "Solo el procesador y la memoria RAM",
+    "Únicamente los cables de conexión",
+    "La documentación y los datos asociados al programa",
+    "Solo el gabinete de la computadora"
+  ],
+  correct: 2
+},
+// Unidad 02: Ingeniería de Sistemas
+{
+  unit: "Unidad 02 · Ingeniería de Sistemas",
+  q: "¿Qué es un sistema, en el contexto de la ingeniería de sistemas?",
+  options: [
+    "Un conjunto de componentes organizados que interactúan para lograr un objetivo común",
+    "Un único programa de computadora aislado",
+    "Un documento de especificación de requerimientos",
+    "Un tipo de prueba de software"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 02 · Ingeniería de Sistemas",
+  q: "¿Qué se entiende por el 'entorno' de un sistema?",
+  options: [
+    "El código fuente del sistema",
+    "Todo aquello externo al sistema que interactúa o lo afecta",
+    "La cantidad de usuarios que lo utilizan",
+    "El nombre asignado al sistema"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 02 · Ingeniería de Sistemas",
+  q: "¿Para qué sirve el modelado de sistemas?",
+  options: [
+    "Para representar de forma simplificada la estructura y el comportamiento de un sistema",
+    "Para eliminar la necesidad de documentar el sistema",
+    "Para instalar físicamente el sistema",
+    "Para reemplazar las pruebas del sistema"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 02 · Ingeniería de Sistemas",
+  q: "¿Qué abarca típicamente el proceso de ingeniería de sistemas?",
+  options: [
+    "Solamente la instalación del hardware",
+    "Solamente la capacitación de usuarios finales",
+    "Desde la definición de requerimientos del sistema hasta su diseño e integración",
+    "Solamente el marketing del producto final"
+  ],
+  correct: 2
+},
+// Unidad 03: Procesos del Software y Ciclos de Vida
+{
+  unit: "Unidad 03 · Procesos y Ciclos de Vida",
+  q: "¿Qué es un proceso de software?",
+  options: [
+    "Un conjunto de actividades relacionadas que llevan a la producción de un producto de software",
+    "Un único comando ejecutado en la terminal",
+    "Un tipo de error en el código",
+    "Un componente físico del servidor"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 03 · Procesos y Ciclos de Vida",
+  q: "¿Cuáles son actividades genéricas presentes en la mayoría de los modelos de proceso de software?",
+  options: [
+    "Solo programar y entregar el producto",
+    "Especificación, diseño, implementación, validación y evolución",
+    "Solo hacer pruebas y facturar al cliente",
+    "Solo instalar el software en producción"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 03 · Procesos y Ciclos de Vida",
+  q: "¿Qué implica la 'iteración de procesos' en el desarrollo de software?",
+  options: [
+    "Que las etapas del proceso se repiten y refinan en ciclos sucesivos",
+    "Que el proceso se ejecuta una única vez sin posibilidad de cambios",
+    "Que se elimina la etapa de diseño",
+    "Que solo se aplica en proyectos pequeños"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 03 · Procesos y Ciclos de Vida",
+  q: "¿Para qué se utilizan las herramientas CASE (ayuda automatizada al proceso)?",
+  options: [
+    "Para reemplazar completamente al equipo de desarrollo",
+    "Para dar soporte automatizado a distintas actividades del proceso de desarrollo de software",
+    "Para imprimir la documentación en papel",
+    "Para administrar exclusivamente la facturación del proyecto"
+  ],
+  correct: 1
+},
+// Unidad 04: Requerimientos
+{
+  unit: "Unidad 04 · Requerimientos",
+  q: "¿Qué es el proceso de ingeniería de requerimientos?",
+  options: [
+    "El conjunto de actividades para descubrir, analizar, documentar y validar los requerimientos del sistema",
+    "Únicamente la etapa de programación del sistema",
+    "El proceso de instalación del software en el cliente",
+    "La revisión final del código antes de entregarlo"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 04 · Requerimientos",
+  q: "¿Qué diferencia hay entre un requerimiento funcional y uno no funcional?",
+  options: [
+    "No existe ninguna diferencia entre ambos",
+    "El funcional describe qué debe hacer el sistema; el no funcional describe restricciones o cualidades, como rendimiento o seguridad",
+    "El no funcional solo aplica a hardware",
+    "El funcional siempre es más importante que el no funcional"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 04 · Requerimientos",
+  q: "¿Para qué se usa el prototipado en la etapa de requerimientos?",
+  options: [
+    "Para reemplazar la documentación de requerimientos",
+    "Para entregar el sistema final al cliente",
+    "Para ayudar a clarificar y validar los requerimientos con el cliente antes de construir el sistema completo",
+    "Para eliminar la necesidad de hacer pruebas"
+  ],
+  correct: 2
+},
+{
+  unit: "Unidad 04 · Requerimientos",
+  q: "¿Cuál es el objetivo de la validación de requerimientos?",
+  options: [
+    "Comprobar que los requerimientos reflejan realmente lo que el cliente necesita, antes de avanzar con el diseño",
+    "Comprobar que el código no tiene errores de sintaxis",
+    "Medir el rendimiento del servidor",
+    "Instalar el sistema en el entorno de producción"
+  ],
+  correct: 0
+},
+// Unidad 05: Diseño de Software Conceptual
+{
+  unit: "Unidad 05 · Diseño Conceptual",
+  q: "¿Qué es la modularidad en el diseño de software?",
+  options: [
+    "Escribir todo el sistema en un único archivo sin divisiones",
+    "Dividir el sistema en partes independientes y manejables, llamadas módulos",
+    "Un tipo de prueba de rendimiento",
+    "Una técnica exclusiva de bases de datos"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 05 · Diseño Conceptual",
+  q: "¿Cuál es el propósito de la descomposición en el diseño de software?",
+  options: [
+    "Dividir un problema complejo en partes más simples de resolver",
+    "Combinar todos los módulos en uno solo",
+    "Eliminar la necesidad de documentar el diseño",
+    "Aumentar la cantidad de código duplicado"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 05 · Diseño Conceptual",
+  q: "¿Qué es un estilo arquitectónico en el diseño de software?",
+  options: [
+    "El color de la interfaz gráfica",
+    "Un patrón general que organiza la estructura y las relaciones entre los componentes del sistema",
+    "El lenguaje de programación utilizado",
+    "El nombre del proyecto de software"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 05 · Diseño Conceptual",
+  q: "¿Cuál de las siguientes es una característica deseable de un buen diseño de software?",
+  options: [
+    "Que sea imposible de modificar en el futuro",
+    "Que tenga alta cohesión y bajo acoplamiento entre sus componentes",
+    "Que dependa de un único desarrollador para entenderlo",
+    "Que no se pueda validar antes de implementarlo"
+  ],
+  correct: 1
+},
+// Unidad 06: Calidad
+{
+  unit: "Unidad 06 · Calidad",
+  q: "¿Cuál es el objetivo del aseguramiento de la calidad (QA) en un proyecto de software?",
+  options: [
+    "Corregir errores únicamente después de que el sistema esté en producción",
+    "Garantizar que los procesos y productos del proyecto cumplan con los estándares de calidad definidos",
+    "Reemplazar completamente las pruebas del sistema",
+    "Reducir la documentación del proyecto al mínimo"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 06 · Calidad",
+  q: "¿Qué es el CMM (Modelo de Madurez de Capacidades)?",
+  options: [
+    "Un lenguaje de programación",
+    "Un modelo que evalúa y clasifica la madurez de los procesos de desarrollo de software de una organización",
+    "Un tipo de base de datos",
+    "Una herramienta exclusiva para pruebas de hardware"
+  ],
+  correct: 1
+},
+{
+  unit: "Unidad 06 · Calidad",
+  q: "¿Cuál es el propósito de una revisión técnica formal o inspección?",
+  options: [
+    "Detectar defectos en un producto de software mediante un examen estructurado por parte de otras personas del equipo",
+    "Reemplazar la necesidad de definir requerimientos",
+    "Medir únicamente el tiempo de desarrollo",
+    "Aumentar la cantidad de líneas de código del sistema"
+  ],
+  correct: 0
+},
+{
+  unit: "Unidad 06 · Calidad",
+  q: "¿Qué son las normas ISO 9000 en el contexto de calidad de software?",
+  options: [
+    "Un conjunto de estándares internacionales relacionados con la gestión de la calidad",
+    "Un lenguaje de programación para pruebas automatizadas",
+    "Un tipo específico de base de datos",
+    "Un protocolo de red para servidores"
+  ],
+  correct: 0
+}
+];
+
+const LEVELS = [
+  {min:0, max:8, label:"Nivel inicial", desc:"Aún no manejás los conceptos básicos de Ingeniería de Software I. Es un buen punto de partida para empezar desde cero."},
+  {min:9, max:17, label:"Nivel básico", desc:"Ya conocés algunos conceptos generales. Con el curso vas a reforzar y ordenar esa base."},
+  {min:18, max:24, label:"Nivel intermedio / avanzado", desc:"Tenés una buena base previa sobre Ingeniería de Software I. El curso te va a permitir profundizar y formalizar esos conocimientos."}
+];
+
+const form = document.getElementById('quiz-form');
+const submitBtn = document.getElementById('submit-btn');
+const progressFill = document.getElementById('progress-fill');
+const progressLabel = document.getElementById('progress-label');
+const answers = new Array(QUESTIONS.length).fill(null);
+
+function render() {
+  form.innerHTML = '';
+  QUESTIONS.forEach((item, qi) => {
+    const qDiv = document.createElement('div');
+    qDiv.className = 'q';
+    qDiv.innerHTML = `
+      <div class="q-unit">${item.unit}</div>
+      <p class="q-title">${qi + 1}. ${item.q}</p>
+      <div class="options" data-qi="${qi}">
+        ${item.options.map((opt, oi) => `
+          <label class="opt" data-oi="${oi}">
+            <input type="radio" name="q${qi}" value="${oi}">
+            <span>${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+    `;
+    form.appendChild(qDiv);
+  });
+
+  form.querySelectorAll('.opt').forEach(label => {
+    label.addEventListener('click', () => {
+      const qi = parseInt(label.parentElement.dataset.qi);
+      const oi = parseInt(label.dataset.oi);
+      answers[qi] = oi;
+      label.parentElement.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+      label.classList.add('selected');
+      updateProgress();
+    });
+  });
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  progressFill.style.width = (answered / QUESTIONS.length * 100) + '%';
+  progressLabel.textContent = `${answered} de ${QUESTIONS.length} respondidas`;
+  submitBtn.disabled = answered !== QUESTIONS.length;
+  submitBtn.textContent = answered === QUESTIONS.length ? 'Ver mi resultado' : 'Responder para continuar';
+}
+
+submitBtn.addEventListener('click', () => {
+  form.querySelectorAll('.q').forEach((qDiv, qi) => {
+    const correct = QUESTIONS[qi].correct;
+    qDiv.querySelectorAll('.opt').forEach((opt, oi) => {
+      opt.querySelector('input').disabled = true;
+      if (oi === correct) opt.classList.add('correct');
+      else if (oi === answers[qi]) opt.classList.add('incorrect');
+    });
+  });
+
+  let score = 0;
+  const unitScores = {};
+  QUESTIONS.forEach((item, qi) => {
+    if (!unitScores[item.unit]) unitScores[item.unit] = {correct:0, total:0};
+    unitScores[item.unit].total++;
+    if (answers[qi] === item.correct) {
+      score++;
+      unitScores[item.unit].correct++;
+    }
+  });
+
+  document.getElementById('score-num').textContent = `${score}/${QUESTIONS.length}`;
+  const level = LEVELS.find(l => score >= l.min && score <= l.max);
+  document.getElementById('score-level').textContent = level.label;
+  document.getElementById('score-desc').textContent = level.desc;
+
+  const bdRows = document.getElementById('breakdown-rows');
+  bdRows.innerHTML = Object.entries(unitScores).map(([unit, s]) => `
+    <div class="bd-row">
+      <div class="bd-label">${unit.split(' · ')[0]}</div>
+      <div class="bd-track"><div class="bd-fill" style="width:${(s.correct/s.total*100)}%"></div></div>
+      <div class="bd-score">${s.correct}/${s.total}</div>
+    </div>
+  `).join('');
+
+  submitBtn.style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  window.scrollTo({top: document.getElementById('results').offsetTop - 20, behavior: 'smooth'});
+
+  sendResultsAnonymously(score, unitScores);
+});
+
+function sendResultsAnonymously(score, unitScores) {
+  const statusEl = document.getElementById('send-status');
+  if (!SHEET_ENDPOINT || SHEET_ENDPOINT === "PEGAR_URL_AQUI") {
+    statusEl.textContent = "";
+    return;
+  }
+  const payload = {
+    timestamp: new Date().toISOString(),
+    score_total: score,
+    total_preguntas: QUESTIONS.length
+  };
+  Object.entries(unitScores).forEach(([unit, s], i) => {
+    const key = "unidad_" + String(i + 1).padStart(2, "0");
+    payload[key + "_correctas"] = s.correct;
+    payload[key + "_total"] = s.total;
+  });
+
+  statusEl.textContent = "Enviando resultado de forma anónima...";
+  statusEl.classList.remove('ok');
+
+  fetch(SHEET_ENDPOINT, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    statusEl.textContent = "Resultado enviado de forma anónima. ¡Gracias por completar el test!";
+    statusEl.classList.add('ok');
+  })
+  .catch(() => {
+    statusEl.textContent = "No se pudo enviar el resultado (revisá tu conexión). Tu puntaje igual se muestra arriba.";
+  });
+}
+
+document.getElementById('retry-btn').addEventListener('click', () => {
+  answers.fill(null);
+  document.getElementById('results').style.display = 'none';
+  submitBtn.style.display = 'block';
+  render();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+render();
+updateProgress();
+</script>
+</body>
+</html>
