@@ -31,7 +31,7 @@ Antes de arrancar la Unidad 1, completá el [test diagnóstico](https://fjlesme.
 | 1 | Ingeniería de software: una visión previa | [Ver .pptx](presentaciones/unidad-01-vision-previa.pptx) | [Ver .docx](ejercitarios/unidad-01-ejercitario.docx) |
 | 2 | Ingeniería de Sistemas | [Ver .pptx](presentaciones/unidad-02-ingenieria-de-sistemas.pptx) | [Ver .docx](ejercitarios/unidad-02-ejercitario.docx) |
 
-> Este repositorio se va actualizando a medida que avanza el cuatrimestre. Las unidades futuras se agregan a esta tabla en el mismo formato.
+> Este repositorio se va actualizando a medida que avanza el semestre. Las unidades futuras se agregan a esta tabla en el mismo formato.
 
 ## 🛠️ Trabajo Práctico Integrador
 
